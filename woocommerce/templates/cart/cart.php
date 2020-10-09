@@ -48,6 +48,15 @@ do_action( 'woocommerce_before_cart' ); ?>
 
 						<td class="product-remove">
 							<?php
+								//Вывод из строки только атрибута комбо
+								$categer_string = $_product->get_attribute();
+								$key_word = 'Комбо';
+								$key_break = ';'
+
+								$categer_string = strstr($categer_string, $key_word);
+								$categer_last_char = strpos($categer_string, $key_break);
+								$categer_string = substr($categer_string, 0 , $categer_last_char);
+
 								echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									'woocommerce_cart_item_remove_link',
 									sprintf(
@@ -55,7 +64,8 @@ do_action( 'woocommerce_before_cart' ); ?>
 										esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
 										esc_html__( 'Remove this item', 'woocommerce' ),
 										esc_attr( $product_id ),
-										esc_attr( $_product->get_attribute() ),
+										//esc_attr( $_product->get_attribute() ),
+										esc_attr( $categer_string ),
 										esc_attr( $_product->get_sku() )
 									),
 									$cart_item_key
