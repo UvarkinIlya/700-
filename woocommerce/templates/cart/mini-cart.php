@@ -47,7 +47,7 @@ do_action( 'woocommerce_before_mini_cart' ); ?>
 							esc_attr__( 'Remove this item', 'woocommerce' ),
 							esc_attr( $product_id ),
 							esc_attr( $cart_item_key ),
-							esc_attr( $_product->get_categories() ),
+							esc_attr( $_product->get_attribute() ),
 							esc_attr( $_product->get_sku() )
 						),
 						$cart_item_key
