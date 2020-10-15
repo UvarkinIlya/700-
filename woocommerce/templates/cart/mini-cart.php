@@ -40,19 +40,31 @@ do_action( 'woocommerce_before_mini_cart' ); ?>
 				<li class="woocommerce-mini-cart-item <?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
 					<?php
 					//Вывод из строки только атрибута комбо
-					$categer_string = $_product->get_attribute();
+					/*function console_log( $data ){
+					  echo '<script>';
+					  echo 'console.log('. json_encode( $data ) .')';
+					  echo '</script>';
+					}*/
+
+					/*$categer_string = $_product->get_category_ids();*/
+					$categer_string = wc_get_product_category_list( $product_id );//Отсюда нужно вязть список слов начаная с 'Комбо'
+
+					//console_log( $categer_string );
 					$key_word = 'Комбо';
-					$key_break = ';'
+					$key_break = '<';
 
-					$categer_string = strstr($categer_string, $key_word);
+					$categer_string = strstr($categer_string, $key_word);//Обрезает начитая со слова 'Комбо'
+					//console_log( $categer_string );
 					$categer_last_char = strpos($categer_string, $key_break);
+					//console_log( $categer_last_char);
 					$categer_string = substr($categer_string, 0 , $categer_last_char);
-
+					//console_log( $categer_string );
 
 					echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						'woocommerce_cart_item_remove_link',
 						sprintf(
-							'<a href="%s" class="remove remove_from_cart_button" aria-label="%s" data-product_id="%s" data-cart_item_key="%s" data-product_categor="%s" data-product_sku="%s">&times;</a>',
+							//data-product_categor="%s"
+							'<a href="%s" class="remove remove_from_cart_button" aria-label="%s" data-product_id="%s" data-product_categor="%s" data-cart_item_key="%s" data-product_sku="%s">&times;</a>',
 							esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
 							esc_attr__( 'Remove this item', 'woocommerce' ),
 							esc_attr( $product_id ),

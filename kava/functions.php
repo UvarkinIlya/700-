@@ -90,8 +90,14 @@ if ( ! class_exists( 'Kava_Theme_Setup' ) ) {
 			// Enqueue styles.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ), 10 );
 
-			// Maybe register Elementor Pro locations.
+			// Maybe register Elementor Pro locations.http://salalat.com.ua/cart/
 			add_action( 'elementor/theme/register_locations', array( $this, 'elementor_locations' ) );
+			//Подключение моего скрпита
+			add_action( 'wp_enqueue_scripts', 'my_scripts_method' );
+			function my_scripts_method() {
+				$script_url = 'http://salalat.com.ua/wp-content/themes/kava/kombo.js';
+				wp_enqueue_script('custom-script', $script_url, array('jquery') );
+			}
 
 		}
 

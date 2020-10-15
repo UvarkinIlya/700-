@@ -49,17 +49,31 @@ do_action( 'woocommerce_before_cart' ); ?>
 						<td class="product-remove">
 							<?php
 								//Вывод из строки только атрибута комбо
-								$categer_string = $_product->get_attribute();
-								$key_word = 'Комбо';
-								$key_break = ';'
+								/*function console_log( $data ){
+								  echo '<script>';
+								  echo 'console.log('. json_encode( $data ) .')';
+								  echo '</script>';
+								}*/
 
-								$categer_string = strstr($categer_string, $key_word);
+								/*$categer_string = $_product->get_category_ids();*/
+								$categer_string = wc_get_product_category_list( $product_id );//Отсюда нужно вязть список слов начаная с 'Комбо'
+
+								//console_log( $categer_string );
+								$key_word = 'Комбо';
+								$key_break = '<';
+
+								$categer_string = strstr($categer_string, $key_word);//Обрезает начитая со слова 'Комбо'
+								//console_log( $categer_string );
 								$categer_last_char = strpos($categer_string, $key_break);
+								//console_log( $categer_last_char);
 								$categer_string = substr($categer_string, 0 , $categer_last_char);
+								//console_log( $categer_string );
+
 
 								echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									'woocommerce_cart_item_remove_link',
 									sprintf(
+										//data-product_categor="%s"
 										'<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_categor="%s" data-product_sku="%s">&times;</a>',
 										esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
 										esc_html__( 'Remove this item', 'woocommerce' ),
