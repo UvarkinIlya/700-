@@ -31,6 +31,7 @@ function get_elem( str, str_start, str_end, start_plus = 0, end_munus = 0, index
 }
 
 function count_li( str ){
+	//Считает кол-во товаров с разными id
 	let last_pos = 0;
 	let count = 0;
 
@@ -40,6 +41,21 @@ function count_li( str ){
 	}
 
 	return count;
+}
+
+function total_price( object ){
+	//Считает цену до применения комбо
+	let new_object = object['my_id'];
+	let total_price = 0;
+
+	for( let key in new_object ){
+		let curent_price =  Number(new_object[key]['price_one']);
+		let curent_count = new_object[key]['count'];
+
+		total_price += curent_price * curent_count;
+	}
+
+	return total_price;
 }
 
 function create_object( str ){
@@ -94,6 +110,8 @@ function create_object( str ){
 			object['my_id'][i]['id_combo'][j] = -1;
 		}
 	}
+
+	object['total_price'] = total_price( object );
 
 	return object;
 }
