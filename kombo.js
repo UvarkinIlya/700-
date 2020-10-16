@@ -113,6 +113,14 @@ function create_object_product( str ){
 
 	object['total_price'] = total_price( object );
 
+	//Считате стоимость доп. опций
+	let all_price = get_elem( str, '"jet-blocks-cart__total-val', '&#8372;</span>', 3, 0);
+	all_price = Number(all_price.replace(',',''));
+	price_product = Number(object['total_price']);
+
+	object['option_price'] = all_price - price_product;
+	//object['option_price'] = Number(all_price) - Number(object['total_price']);
+
 	return object;
 }
 
@@ -148,11 +156,26 @@ function establish_price( elem1, elem2){
 function find_item( object, key_item, inside_key_item, arr_categor, categor_item ){
 	//Поиска элемента с для создания combo
 
+	let price_1 = Number(object[key_item]['price_one']);// Цена товара для которого был вызов
+	//Проверка на Крем суп
+	if (categor_item == 'Крем'){
+		object[key_item]['id_combo'][inside_key_item] = count_combo;
+		count_combo++;
+		object_combo[count_object_combo] = {};
+		object_combo[count_object_combo]['combo_name'] = "Крем суп дня";
+		object_combo[count_object_combo]['price'] = set_price[3];
+		object_combo[count_object_combo]['price_old'] = price_1;
+		object_combo[count_object_combo]['id_product_1'] = object[key_item]['id'];
+
+		return;
+	}
+
 	for( let key in object ){
 		let inside_object = object[key]['id_combo'];
 		if( object[key]['combo_flag'] == false) continue;
 
 		let categor = object[key]['categor'];//Категория товара
+		let price_2 = Number(object[key]['price_one']);//Цена товара для которого выполняется проверка
 
 		for( inside_key in inside_object){
 			let combo_id = inside_object[inside_key];//Значение combo
@@ -172,6 +195,8 @@ function find_item( object, key_item, inside_key_item, arr_categor, categor_item
 					object_combo[count_object_combo]['combo_name'] = categor_item + '+' + arr_categor[1];
 					object_combo[count_object_combo]['price'] = establish_price(categor_item, arr_categor[1]);
 				}
+
+				object_combo[count_object_combo]['price_old'] = price_1 + price_2;
 
 				object_combo[count_object_combo]['id_product_1'] = object[key_item]['id'];
 				object_combo[count_object_combo]['id_product_2'] = object[key]['id'];
@@ -210,12 +235,23 @@ function change_combo( object ){
 	return;
 }
 
+function count_combo_price( object ){
+	//Подсчет разницы с учетом combo
+	let defer = 0;
+
+	for( let key in object ){
+		defer += object[key]['price_old'] - object[key]['price'];
+	}
+
+	return defer;
+}
+
 const Storage = window.sessionStorage;//Взятие sessionStorage
-const combo_item = ['Суп', 'Салат', 'Паста'];//Категории комбо
+const combo_item = ['Суп', 'Салат', 'Паста', 'Крем'];//Категории комбо
 const combo_set = [['Суп', 'Салат'],
 									 ['Салат', 'Паста'],
 									 ['Суп', 'Паста']];
-const set_price = [175, 195, 170];
+const set_price = [175, 195, 170, 75];
 let last_arr = [0, 0, 0, 0];//Массив индексов прошлого нахождения
 let count_combo = 0;// Счетчик кол-ва combo 
 let count_object_combo = 0;
@@ -226,7 +262,7 @@ let object_item = create_object_product(all_item);//Объет всех това
 
 change_combo(object_item);
 
-
-//<div class="widget_shopping_cart_content">↵↵	<ul class="woocommerce-mini-cart cart_list product_list_widget ">↵						<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=f855bdbd2e05b3cffe13b731825fc566&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="179" data-product_categor="f855bdbd2e05b3cffe13b731825fc566" data-cart_item_key="Комбо меню Паста" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/white-paper-coffee-hot-cups-with-black-travel-lids-and-sleeves/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Овочева паста ( 300 г )						</a>↵															<span class="quantity">1 &times; <span class="woocommerce-Price-amount amount"><bdi>95.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵								<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=7504adad8bb96320eb3afdd4df6e1f60&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="881" data-product_categor="7504adad8bb96320eb3afdd4df6e1f60" data-cart_item_key="Комбо меню Салати" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/%d1%81%d0%b0%d0%bb%d0%b0%d1%82-%d1%81%d0%b8%d1%80-%d0%ba%d1%83%d1%80%d0%ba%d0%b0-%d1%88%d0%bf%d0%b8%d0%bd%d0%b0%d1%82-300-%d0%b3/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2020/10/5D7BB62B-7B58-4CF4-A3FD-247651ED59AD-2-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Салат сир - курка - шпинат ( 300 г )						</a>↵															<span class="quantity">3 &times; <span class="woocommerce-Price-amount amount"><bdi>105.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵								<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=2a084e55c87b1ebcdaad1f62fdbbac8e&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="859" data-product_categor="2a084e55c87b1ebcdaad1f62fdbbac8e" data-cart_item_key="Комбо меню Паста" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/%d1%82%d0%b5%d0%bb%d1%8f%d1%82%d0%b8%d0%bd%d0%b0-%d1%82%d0%be%d0%bc%d0%b0%d1%82%d0%b8-%d0%bd%d0%b0-%d1%80%d1%83%d0%ba%d0%be%d0%bb%d0%b0-300-%d0%b3/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2020/09/AC131106-D8A3-439C-81C8-2D634C716AFF-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Телятина томати та рукола ( 300 г )						</a>↵															<span class="quantity">1 &times; <span class="woocommerce-Price-amount amount"><bdi>100.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵								<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=8f53295a73878494e9bc8dd6c3c7104f&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="179" data-product_categor="8f53295a73878494e9bc8dd6c3c7104f" data-cart_item_key="Комбо меню Паста" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/white-paper-coffee-hot-cups-with-black-travel-lids-and-sleeves/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2019/05/1BFC9DF3-229E-4C67-AB8E-4D69E84C2682-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Овочева паста ( 300 г )						</a>↵															<span class="quantity">1 &times; <span class="woocommerce-Price-amount amount"><bdi>95.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵								<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=96da2f590cd7246bbde0051047b0d6f7&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="177" data-product_categor="96da2f590cd7246bbde0051047b0d6f7" data-cart_item_key="" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/amazonfresh-just-bright-whole-bean-coffee-light-roast/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2019/05/3FC24E67-ADED-4128-B9F8-46F48750C247-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Паста прошуто песто ( 300 г )						</a>↵															<span class="quantity">1 &times; <span class="woocommerce-Price-amount amount"><bdi>120.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵								<li class="woocommerce-mini-cart-item mini_cart_item">↵					<a href="http://salalat.com.ua/cart/?remove_item=170c944978496731ba71f34c25826a34&#038;_wpnonce=c26f097d63" class="remove remove_from_cart_button" aria-label="Удалить эту позицию" data-product_id="884" data-product_categor="170c944978496731ba71f34c25826a34" data-cart_item_key="Комбо меню Салати" data-product_sku="">&times;</a>											<a href="http://salalat.com.ua/product/%d1%81%d0%b0%d0%bb%d0%b0%d1%82-%d0%ba%d1%83%d1%80%d0%ba%d0%b0-%d1%88%d0%bf%d0%b8%d0%bd%d0%b0%d1%82-300-%d0%b3/">↵							<img width="300" height="300" src="http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-300x300.jpg" class="attachment-woocommerce_thumbnail size-woocommerce_thumbnail" alt="" loading="lazy" srcset="http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-300x300.jpg 300w, http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-150x150.jpg 150w, http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-230x230.jpg 230w, http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-400x400.jpg 400w, http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-640x640.jpg 640w, http://salalat.com.ua/wp-content/uploads/2020/10/1428C5C3-4921-4446-82F3-5051494F1B69-2-100x100.jpg 100w" sizes="(max-width: 300px) 100vw, 300px" />Салат курка шпинат ( 300 г )						</a>↵															<span class="quantity">4 &times; <span class="woocommerce-Price-amount amount"><bdi>105.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span></span>				</li>↵					</ul>↵↵	<p class="woocommerce-mini-cart__total total">↵		<strong>Подытог:</strong> <span class="woocommerce-Price-amount amount"><bdi>1,165.00<span class="woocommerce-Price-currencySymbol">&#8372;</span></bdi></span>	</p>↵↵	↵	<p class="woocommerce-mini-cart__buttons buttons"><a href="http://salalat.com.ua/cart/" class="button wc-forward">Просмотр корзины</a><a href="http://salalat.com.ua/checkout/" class="button checkout wc-forward">Оформление заказа</a></p>↵↵	↵↵</div>
+object_item['combo_price'] = object_item['total_price'] - count_combo_price(object_combo);//Вывод цены с учетом combo
 
 console.log(object_item);
+console.log(object_combo);
