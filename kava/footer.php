@@ -20,6 +20,8 @@
 </div><!-- #page -->
 
 <?php wp_footer(); ?>
-
+	<script src="http://salalat.com.ua/wp-content/themes/kava/kombo.js"></script>
+	<script src="http://salalat.com.ua/wp-content/themes/kava/reloud.js"></script>
+	<script src="http://salalat.com.ua/wp-content/themes/kava/enter.js"></script>
 </body>
 </html>

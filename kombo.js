@@ -167,6 +167,8 @@ function find_item( object, key_item, inside_key_item, arr_categor, categor_item
 		object_combo[count_object_combo]['price_old'] = price_1;
 		object_combo[count_object_combo]['id_product_1'] = object[key_item]['id'];
 
+		count_object_combo++;
+
 		return;
 	}
 
@@ -252,6 +254,7 @@ const combo_set = [['Суп', 'Салат'],
 									 ['Салат', 'Паста'],
 									 ['Суп', 'Паста']];
 const set_price = [175, 195, 170, 75];
+const arr_img = ['http://salalat.com.ua/wp-content/uploads/2019/05/Mask-Group-7-300x300.png', 'hreh2', 'href3', 'href4'];//Массив src img
 let last_arr = [0, 0, 0, 0];//Массив индексов прошлого нахождения
 let count_combo = 0;// Счетчик кол-ва combo 
 let count_object_combo = 0;
