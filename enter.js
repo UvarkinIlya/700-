@@ -75,11 +75,6 @@ function establish_title(title_1 , title_2){
   return title
 }
 
-function set_price_fun(){
-  //Устанавливает цену
-
-}
-
 function create_combo(elem, key){
   //Создание elem
   let img = elem.getElementsByClassName('product-thumbnail')[0].getElementsByTagName('a')[0].getElementsByTagName('img')[0];
@@ -111,6 +106,71 @@ function create_combo(elem, key){
   price_combo.innerHTML = price_combo_new + '.00' + price_combo_span;
 }
 
+function count_item( object, index ){
+  //Считает кол-во товаров не входяших в комбо
+  let nest_object = object['my_id'][index]['id_combo'];
+  let count = 0;
+
+  for(let key in nest_object){
+    if(nest_object[key] == -1){
+      count++;
+    }
+  }
+
+  return count;
+}
+
+function change_price( object, index, count, elem_price){
+  //Устанвавливает новую цену
+  let nest_object = object['my_id'][index]['id_combo'];
+  let price = Number(object['my_id'][index]['price_one']);//Цена одного товара
+  let count_residue = Object.keys(nest_object).length - count;//Сколько удалили товаров
+  let old_price = elem_price.innerText;
+
+  let sepater = old_price.indexOf('₴');
+  old_price = old_price.slice(0, sepater);
+
+  let new_price = Number(old_price) - (count_residue * price);
+
+  elem_price.innerText = new_price + '.00₴';
+}
+
+function delit_item( object ){
+  //Удаляет товары, которые уже есть в комбо и устанвливает новое кол-во товоров, если кол-во != 0
+  let nest_object = object['my_id'];
+  let elem = '';
+  let elem_input = '';
+  let elem_price = '';
+  let count = 0;
+
+  for(key in nest_object){
+    elem = document.getElementsByClassName('woocommerce-cart-form__cart-item')[key];
+
+    elem_price = elem.getElementsByClassName('product-subtotal')[0];
+    elem_price = elem_price.getElementsByTagName('bdi')[0];
+
+    elem_input = elem.getElementsByClassName('product-quantity')[0];
+    elem_input = elem_input.getElementsByTagName('input')[0];
+
+    count = count_item(object, key);
+
+    elem_input.value = count;
+
+    if(count == 0){
+      elem.style.display = 'none';
+    }else{
+      change_price(object_item, key, count, elem_price);//Изменят подытог
+    }
+  }
+}
+
+function emyl_click( elem ){
+  //Симулирует click
+  let item = elem.getElementsByClassName('product-remove')[0].getElementsByTagName('a')[0];
+  let click = new MouseEvent("click");
+
+  item.dispatchEvent(click);
+}
 
 let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
 let parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
@@ -129,7 +189,10 @@ for(let i = 0; i < count_combo; i++ ){
   parent.append(elem);//Добавление элемента
 }
 
+delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
 
+//Эмуляция клика
+//emyl_click(simple_child);
 
 //console.log(elem);
 //console.log(elem_1);
