@@ -10,6 +10,10 @@ function reloud_2(){
 	setTimeout(reloud, 3000);//Ждать нужно чтобы успел прогрузится sessionstorage
 }
 
+function upgrade_price(){
+	setTimeout(enter_price_fun, 3000);//Ждаьб чтобы перезаписалась цена в верхнем правом углу
+}
+
 function remember_delit_combo(){
 	//Запоминаем какое комбо удалено
 
@@ -88,6 +92,7 @@ function reloud_3(elem, index){
 
 	sessionStorage.setItem('delit', Storage['delit'] + ',' + combo_index);//Установка в sessionStorage индексы удаланных комбо
 
+	localStorage.setItem('delit', Storage['delit'] + ',' + combo_index);
 	elem_parent.style.display = 'none';//Удаляем комбо со страницы
 
 	reloud_2();
@@ -124,9 +129,13 @@ listen_remove_combo();
 
 elem_input = '';
 
-
-/*for(let i = 0; i < item_remove.length; i++){
-	item_remove[i].onclick = reloud_2;//Обновляет страницу при удалении товара
-}*/
+if(link == 'http://salalat.com.ua/cart/'){
+	//Установка функции обновления цены на страницые при выборе другого селектора
+	let develory_parent = document.getElementById('shipping_method');
+	for(let i = 0; i < 3; i++){
+		let develory = develory_parent.getElementsByTagName('input')[i];
+		develory.onclick = reloud_2; 
+	}
+}
 
 

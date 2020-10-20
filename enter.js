@@ -221,39 +221,103 @@ function emyl_click( elem ){
   item.dispatchEvent(click);
 }
 
-let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
-let parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
+function count_price(){
+  //Устнавливает цену для вывоа
+  let enter_price = object_item['total_price'];
+  let price_del_combo = 0;//Суммарная цена удаленных комбо, которые еще есть в enter_price
 
-const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__cart-item')[0];
-const simple_child = simple_child_1.cloneNode(true);//Образец элемента
-creat_simple(simple_child);//Создание примера
+  let len = Object.keys(object_combo).length;
+  for(let i = 0; i < len; i++){
+    let flag = false;
 
-let arr_delit_combo = Storage['delit'].split(',');// Получаем массив indexов удаленных комбо
+    for(let j = 1; j < arr_delit_combo.length; j++){
+      if(Number(arr_delit_combo[j]) === i){
+        flag = true;
+      }
+    }
 
-count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
-for(let i = 0; i < count_combo; i++ ){
-  let flag = false;//Флаг явлеться ли i удаленным индексом?
-
-  //Проверка на это
-  for(let j = 1; j < arr_delit_combo.length; j++){
-    if(Number(arr_delit_combo[j]) === i){
-      flag = true;
+    if(flag){
+      price_del_combo += object_combo[i]['price'];
     }
   }
 
-  //Вывод каждого комбо
-  let elem = simple_child.cloneNode(true);
+  enter_price -= price_del_combo;
 
-  create_combo(elem, i, flag);
-
-  parent.append(elem);//Добавление элемента
+  return enter_price;
 }
 
-//establish_delit_seting(Storage['delit']);
-delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
+function enter_price_fun(){
+  //Вывод цены на страницу
+  enter_price = count_price();//Устанавливает новую цену
+  let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+  elem_1.innerHTML = enter_price + '.00₴';
 
-//Эмуляция клика
-//emyl_click(simple_child);
+  if(link == 'http://salalat.com.ua/cart/'){
+    //let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+    let parent_elem_2 = document.getElementsByClassName('cart-subtotal')[0];
+    let elem_2 = parent_elem_2.getElementsByTagName('bdi')[0];
+    let parent_elem_3 = document.getElementsByClassName('order-total')[0];
+    let elem_3 = parent_elem_3.getElementsByTagName('bdi')[0];
 
-//console.log(elem);
-//console.log(elem_1);
+    let develory_parent = document.getElementById('shipping_method');
+    let develory = develory_parent.getElementsByTagName('input')[2];
+    let develory_flag = develory.checked;
+
+    //elem_1.innerHTML = enter_price + '.00₴';
+    elem_2.innerText = enter_price + '.00₴';
+
+    if(develory_flag){
+      elem_3.innerText = Number(enter_price + 70) + '.00₴';
+    }else{
+      elem_3.innerText = enter_price + '.00₴';
+    }
+  }
+}
+
+let enter_price = 0;//Цена для вывода
+setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+
+let link = window.location.href;
+let arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
+
+let parent = '';
+
+if(link == 'http://salalat.com.ua/cart/'){
+  let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
+  parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
+
+  const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__cart-item')[0];
+  const simple_child = simple_child_1.cloneNode(true);//Образец элемента
+  creat_simple(simple_child);//Создание примера
+
+  count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
+  for(let i = 0; i < count_combo; i++ ){
+    let flag = false;//Флаг явлеться ли i удаленным индексом?
+
+    //Проверка на это
+    for(let j = 1; j < arr_delit_combo.length; j++){
+      if(Number(arr_delit_combo[j]) === i){
+        flag = true;
+      }
+    }
+
+    //Вывод каждого комбо
+    let elem = simple_child.cloneNode(true);
+
+    create_combo(elem, i, flag);
+
+    parent.append(elem);//Добавление элемента
+  }
+
+  //establish_delit_seting(Storage['delit']);
+  delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
+
+  //enter_price_fun();//Вывод цены на страницу
+  //Эмуляция клика
+  //emyl_click(simple_child);
+
+  //console.log(elem);
+  //console.log(elem_1);
+}
+
+
