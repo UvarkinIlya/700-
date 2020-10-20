@@ -75,7 +75,23 @@ function establish_title(title_1 , title_2){
   return title
 }
 
-function create_combo(elem, key){
+function delit_href(elem, index){
+  //Убирает с href с кнопкок удалить изменяет id combo
+  let remove_elem = elem.getElementsByClassName('product-remove')[0];
+  remove_elem = remove_elem.getElementsByTagName('a')[0];
+
+  remove_elem.href = "";
+
+  let id_1 = object_combo[index]['id_product_1'];
+  let id_2 = '';
+  if(object_combo[index]['combo_name'] != 'Крем суп дня'){
+    id_2 = object_combo[index]['id_product_2'];
+  }
+
+  remove_elem.dataset.product_id = id_1 + '+' + id_2;
+}
+
+function create_combo(elem, key, flag){
   //Создание elem
   let img = elem.getElementsByClassName('product-thumbnail')[0].getElementsByTagName('a')[0].getElementsByTagName('img')[0];
   let img_word = object_combo[key]['combo_name'];
@@ -104,6 +120,12 @@ function create_combo(elem, key){
   let price_combo_new = object_combo[key]['price'];
 
   price_combo.innerHTML = price_combo_new + '.00' + price_combo_span;
+
+  delit_href(elem, key);//Убирает с href с кнопкок удалить
+
+  if(flag){
+    elem.style.display = 'none';
+  }
 }
 
 function count_item( object, index ){
@@ -134,6 +156,33 @@ function change_price( object, index, count, elem_price){
 
   elem_price.innerText = new_price + '.00₴';
 }
+
+/*function establish_delit_seting(str){
+  //Применение данных из session['dilit']
+  let arr = str.split(',');
+  let elem1_id = '';
+  let elem2_id = '';
+
+  for(let i = 0; i < arr.length - 1; i++){
+    elem1_id = arr[i].slice(arr[i].indexOf('{') + 1, arr[i].indexOf('+'));
+
+    if(arr[i].indexOf('+') != -1){
+      elem2_id = arr[i].slice(arr[i].indexOf('+') + 1, arr[i].indexOf('}'));
+    }
+
+    elem1 = parent.getElementsByClassName('woocommerce-cart-form__cart-item')[elem1_id];
+    elem2 = parent.getElementsByClassName('woocommerce-cart-form__cart-item')[elem2_id];
+
+    elem1 = elem1.getElementsByClassName('quantity')[0];
+    elem2 = elem2.getElementsByClassName('quantity')[0];
+
+    elem1 = elem1.getElementsByTagName('input')[0];
+    elem2 = elem2.getElementsByTagName('input')[0];
+
+    elem1.setAttribute('value', elem1.value - 1);
+    elem2.setAttribute('value', elem2.value - 1);
+  }
+}*/
 
 function delit_item( object ){
   //Удаляет товары, которые уже есть в комбо и устанвливает новое кол-во товоров, если кол-во != 0
@@ -179,16 +228,28 @@ const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__c
 const simple_child = simple_child_1.cloneNode(true);//Образец элемента
 creat_simple(simple_child);//Создание примера
 
+let arr_delit_combo = Storage['delit'].split(',');// Получаем массив indexов удаленных комбо
+
 count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
 for(let i = 0; i < count_combo; i++ ){
+  let flag = false;//Флаг явлеться ли i удаленным индексом?
+
+  //Проверка на это
+  for(let j = 1; j < arr_delit_combo.length; j++){
+    if(Number(arr_delit_combo[j]) === i){
+      flag = true;
+    }
+  }
+
   //Вывод каждого комбо
   let elem = simple_child.cloneNode(true);
 
-  create_combo(elem, i);
+  create_combo(elem, i, flag);
 
   parent.append(elem);//Добавление элемента
 }
 
+//establish_delit_seting(Storage['delit']);
 delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
 
 //Эмуляция клика
