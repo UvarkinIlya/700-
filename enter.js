@@ -260,8 +260,8 @@ function emyl_click( elem ){
 function enter_price_fun(){
   //Вывод цены на страницу
   enter_price = count_price();//Устанавливает новую цену
-  let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
-  elem_1.innerHTML = enter_price + '.00₴';
+  //let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+  //elem_1.innerHTML = enter_price + '.00₴';
 
   if(link == 'http://salalat.com.ua/cart/'){
     //let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
@@ -374,7 +374,7 @@ function count_price(){
     }
 
     localStorage['sum_price'] = sum_price;//Заносим суммарную цену в localStorage
-  }else{
+  }/*else{
     //Если мы находимся не на странице оформления заказа. И не можем посчитать цену, по странице
     let elem = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
     elem = elem.innerHTML;
@@ -389,14 +389,30 @@ function count_price(){
       sum_price =  Number(localStorage['sum_price']) + Number(elem - Number(localStorage['old_price']));
       localStorage['old_price'] = "";
     }
-  }
+  }*/
 
   //Вывод на цены на страницу
   return sum_price;
 }
 
+//Устанавливает "в корзину" вместо цены корзины на всех страницах
+function establish_title(){
+  let parent = document.getElementsByClassName('jet-blocks-cart__total')[0];
+  let elem = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+
+  let new_elem = elem.cloneNode(true);//Создает копию elem с глубоким клонированием
+  new_elem.innerHTML = 'Корзина'
+  new_elem.className = "";//Удаляем все классы, т.к цена задается по классам
+
+  parent.append(new_elem);//Добавляем новый элемент в конец
+
+  elem.remove();//Удаление страрового узла с ценой, т.к код wordpress изменяет его и выводит на страницу
+}
+
 let enter_price = 0;//Цена для вывода
 setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+
+establish_title();//Устанавливает "в корзину" вместо цены корзины на всех страницах
 
 let link = window.location.href;
 let arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
