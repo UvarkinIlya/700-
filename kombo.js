@@ -248,7 +248,22 @@ function count_combo_price( object ){
 	return defer;
 }
 
-const Storage = window.sessionStorage;//Взятие sessionStorage
+//Главная функия для создания объектов
+function main_object(){
+	Storage = window.sessionStorage;//Взятие sessionStorage
+	all_item = string_items(); //Строка со всеми объектами
+	object_item = create_object_product(all_item);//Объет всех товаров
+
+	change_combo(object_item);
+
+	object_item['combo_price'] = object_item['total_price'] - count_combo_price(object_combo);//Вывод цены с учетом combo
+
+	console.log(object_item);
+	console.log(object_combo);
+
+	main_enter();//Вызов функции выводящий все на страницу
+}
+
 const combo_item = ['Суп', 'Салат', 'Паста', 'Крем'];//Категории комбо
 const combo_set = [['Суп', 'Салат'],
 									 ['Салат', 'Паста'],
@@ -260,12 +275,9 @@ let count_combo = 0;// Счетчик кол-ва combo
 let count_object_combo = 0;
 let object_combo = {};
 
-let all_item = string_items(); //Строка со всеми объектами
-let object_item = create_object_product(all_item);//Объет всех товаров
+let Storage = ''
+let all_item = ''
+let object_item= '';//Для глобоального использования
 
-change_combo(object_item);
-
-object_item['combo_price'] = object_item['total_price'] - count_combo_price(object_combo);//Вывод цены с учетом combo
-
-console.log(object_item);
-console.log(object_combo);
+//window.onload = () => main_object();
+setTimeout(main_object, 1000);//Начало работы главной функии. пауза нужна чтобы успел прогрузиться sessionStorage

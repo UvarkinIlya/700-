@@ -396,7 +396,7 @@ function count_price(){
 }
 
 //Устанавливает "в корзину" вместо цены корзины на всех страницах
-function establish_title(){
+function establish_backet(){
   let parent = document.getElementsByClassName('jet-blocks-cart__total')[0];
   let elem = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
 
@@ -409,17 +409,55 @@ function establish_title(){
   elem.remove();//Удаление страрового узла с ценой, т.к код wordpress изменяет его и выводит на страницу
 }
 
-let enter_price = 0;//Цена для вывода
-setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+//Главная функция для вывода данных на страницу
+function main_enter(){
+  setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+  establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
 
-establish_title();//Устанавливает "в корзину" вместо цены корзины на всех страницах
+  if(link == 'http://salalat.com.ua/cart/'){
+    let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
+    parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
+
+    const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__cart-item')[0];
+    const simple_child = simple_child_1.cloneNode(true);//Образец элемента
+    creat_simple(simple_child);//Создание примера
+
+    count_option();
+
+    count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
+    for(let i = 0; i < count_combo; i++ ){
+      let flag = false;//Флаг явлеться ли i удаленным индексом?
+
+      //Проверка на это
+      for(let j = 1; j < arr_delit_combo.length; j++){
+        if(Number(arr_delit_combo[j]) === i){
+          flag = true;
+        }
+      }
+
+      //Вывод каждого комбо
+      let elem = simple_child.cloneNode(true);
+
+      create_combo(elem, i, flag);
+
+      parent.append(elem);//Добавление элемента
+    }
+
+    delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
+  }
+}
+
+let enter_price = 0;//Цена для вывода
+//setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+
+//establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
 
 let link = window.location.href;
 let arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
 
 let parent = '';
 
-if(link == 'http://salalat.com.ua/cart/'){
+/*if(link == 'http://salalat.com.ua/cart/'){
   let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
   parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
 
@@ -448,15 +486,8 @@ if(link == 'http://salalat.com.ua/cart/'){
     parent.append(elem);//Добавление элемента
   }
 
-  //establish_delit_seting(Storage['delit']);
   delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
 
-  //enter_price_fun();//Вывод цены на страницу
-  //Эмуляция клика
-  //emyl_click(simple_child);
-
-  //console.log(elem);
-  //console.log(elem_1);
-}
+}*/
 
 

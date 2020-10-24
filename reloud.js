@@ -111,7 +111,7 @@ function listen_remove_combo(){
 		}
 
 		let total_price = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
-		total_price.input = () => reload2();
+		//total_price.input = () => reload2();
 
 		if(a_href.href == 'http://salalat.com.ua/cart/'){
 			item_remove[i].onclick = () => reloud_3(item_remove[i], i);//Обновляет страницу при удалении combo
