@@ -110,6 +110,9 @@ function listen_remove_combo(){
 			continue;
 		}
 
+		let total_price = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+		total_price.input = () => reload2();
+
 		if(a_href.href == 'http://salalat.com.ua/cart/'){
 			item_remove[i].onclick = () => reloud_3(item_remove[i], i);//Обновляет страницу при удалении combo
 		}else{
@@ -121,15 +124,17 @@ function listen_remove_combo(){
 const item_qty = document.getElementsByClassName('qty');
 const item_remove = document.getElementsByClassName('product-remove');
 
-for(let i = 0; i < item_qty.length; i++){
-	item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
-}
-
-listen_remove_combo();
-
-elem_input = '';
 
 if(link == 'http://salalat.com.ua/cart/'){
+
+	for(let i = 0; i < item_qty.length; i++){
+		item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
+	}
+
+	listen_remove_combo();
+
+	elem_input = '';
+
 	//Установка функции обновления цены на страницые при выборе другого селектора
 	let develory_parent = document.getElementById('shipping_method');
 	for(let i = 0; i < 3; i++){

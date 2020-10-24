@@ -62,17 +62,22 @@ function get_title(id){
   return title;
 }
 
-function establish_title(title_1 , title_2){
+function establish_title(title_1 , title_2, name_option){
   //Устанавливает название товара
   let title = "";
+  let option = '';
 
-  if(title_2 != ''){
-    title = '<p style="line-height: 28px;">' + title_1 + ' + <br>' + title_2 + '</p>';
-  }else{
-    title = '<p style="line-height: 28px;">' + title_1 + '</p>';
+  if(name_option != undefined){
+    option = ' + ' + name_option;
   }
 
-  return title
+  if(title_2 != ''){
+    title = '<p style="line-height: 28px;">' + title_1 + ' + ' + title_2 + option +'</p>';
+  }else{
+    title = '<p style="line-height: 28px;">' + title_1 + option + '</p>';
+  }
+
+  return title;
 }
 
 function delit_href(elem, index){
@@ -113,13 +118,19 @@ function create_combo(elem, key, flag){
     title_2 = '';
   }
 
-  title.innerHTML = establish_title(title_1 , title_2);
+  title.innerHTML = establish_title(title_1 , title_2, object_combo[key]['name_option']);
 
   let price_combo = elem.getElementsByClassName('product-subtotal')[0].getElementsByTagName('span')[0].getElementsByTagName('bdi')[0];
   let price_combo_span = price_combo.getElementsByTagName('span')[0].innerHTML;
   let price_combo_new = object_combo[key]['price'];
 
-  price_combo.innerHTML = price_combo_new + '.00' + price_combo_span;
+  let price_option = 0;
+  if(object_combo[key]['price_option'] != undefined){
+    price_option = object_combo[key]['price_option'];
+    price_option = Number(price_option);
+  }
+
+  price_combo.innerHTML = (price_combo_new + price_option) + '.00' + price_combo_span;
 
   delit_href(elem, key);//Убирает с href с кнопкок удалить
 
@@ -221,7 +232,7 @@ function emyl_click( elem ){
   item.dispatchEvent(click);
 }
 
-function count_price(){
+/*function count_price(){
   //Устнавливает цену для вывоа
   let enter_price = object_item['total_price'];
   let price_del_combo = 0;//Суммарная цена удаленных комбо, которые еще есть в enter_price
@@ -244,7 +255,7 @@ function count_price(){
   enter_price -= price_del_combo;
 
   return enter_price;
-}
+}*/
 
 function enter_price_fun(){
   //Вывод цены на страницу
@@ -274,6 +285,116 @@ function enter_price_fun(){
   }
 }
 
+function count_option(){
+  //Считываем цену доп. опций если она есть. Обновляем цену товара, подытог. Записываем стоимость доп опций в object_item
+  //Запускаем большой цикл по всем элементам из начального списка
+  let len = Object.keys(object_item['my_id']).length;
+  for(let i = 0; i < len; i++){
+    let elem = parent.getElementsByClassName('woocommerce-cart-form__cart-item')[i];//Взяли определленный товар из начального списка
+
+    let elem_option = elem.getElementsByClassName('variation')[0];
+
+    if(elem_option == undefined){
+      continue;//Если не нашли доп. опций переходи на следующую итерацию
+    }
+
+    elem_option = elem_option.getElementsByTagName('p')[0].innerHTML;// Строка, кототорая содержит цену доп. опций выделенного товара
+
+    //Получение из строки нужной цену опции
+    let start = elem_option.indexOf('+') + 1;
+    let end = elem_option.indexOf('₴');
+    let option = elem_option.slice(start, end);// Цена доп. опций
+
+    option = Number(option);//Привод переменной к типу int
+
+    //Записываем стоимость в object_item
+    object_item['my_id'][i]['option'] = option;
+
+    //Добавляем option в combo. Установка названий доп. опций в object_combo
+    let len_j = Object.keys(object_item['my_id'][i]['id_combo']).length;// Кол-во элэментов у которых данное доп.опция
+    for(let j = 0; j < len_j; j++){
+
+      let object = object_item['my_id'][i]['id_combo'];
+
+      index = object[j];//Порядок комбо
+
+      if(index == -1){
+        continue;
+      }
+
+      //Устнавока имени доп. опции для всех элементов combo у которых данное опция
+      if(object_combo[index]['name_option'] === undefined){
+        object_combo[index]['name_option'] = elem_option;
+      }else{
+        object_combo[index]['name_option'] = object_combo[index]['name_option'] + '+' + elem_option;
+      }
+
+      //Добавляем option в combo
+      if(object_combo[index]['price_option'] === undefined){
+        object_combo[index]['price_option'] = option;
+      }else{
+        object_combo[index]['price_option'] = object_combo[index]['price_option'] + option;
+      }
+
+    }
+
+    //Обновляем цену товара и подытог у начального списка
+    let product_price = elem.getElementsByClassName('product-price')[0];
+    product_price = product_price.getElementsByTagName('bdi')[0];// Элементт в котором записана цена одного товара
+
+    let price = Number(object_item['my_id'][i]['price_one']) + option;// Цена одного товара вместе доп. опциями
+    product_price.innerHTML = price + '.00₴';// Устанавливаем цену одного товара
+
+    let product_subtotal = elem.getElementsByClassName('product-subtotal')[0];
+    product_subtotal = product_subtotal.getElementsByTagName('bdi')[0];// Элемент в котором записан подытог
+
+    product_subtotal.innerHTML = (price * object_item['my_id'][i]['count']) + '.00₴';//Устанавливаем подытог
+  }
+}
+
+function count_price(){
+  //Считает общую цену
+  //Считываем цену со страницы
+  let sum_price = 0;//Суммарная цена
+  if(link == 'http://salalat.com.ua/cart/'){
+    let elems = parent.getElementsByClassName('woocommerce-cart-form__cart-item');//Все элементы
+
+    for(let i = 0; i < elems.length; i++){
+      if(elems[i].style.display != 'none'){
+        //Если элемент есть на страницу
+        let elem = elems[i].getElementsByClassName('product-subtotal')[0];
+        elem = elem.getElementsByClassName('woocommerce-Price-amount')[0];
+        elem = elem.getElementsByTagName('bdi')[0].innerHTML;
+
+        elem = elem.slice( 0, elem.indexOf('₴') );//Взятие только цены
+        elem = Number(elem);
+
+        sum_price += elem;
+      }
+    }
+
+    localStorage['sum_price'] = sum_price;//Заносим суммарную цену в localStorage
+  }else{
+    //Если мы находимся не на странице оформления заказа. И не можем посчитать цену, по странице
+    let elem = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
+    elem = elem.innerHTML;
+    elem = elem.slice( 0, elem.indexOf('₴') );
+    elem = elem.slice( 0, elem.indexOf(',') ) + elem.slice( elem.indexOf(',') + 1);
+    elem = Number(elem);
+
+    if(localStorage['old_price'] == undefined || localStorage['old_price'] == ""){
+      localStorage['old_price'] = elem;
+      //reloud_2();
+    }else{
+      sum_price =  Number(localStorage['sum_price']) + Number(elem - Number(localStorage['old_price']));
+      localStorage['old_price'] = "";
+    }
+  }
+
+  //Вывод на цены на страницу
+  return sum_price;
+}
+
 let enter_price = 0;//Цена для вывода
 setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
 
@@ -289,6 +410,8 @@ if(link == 'http://salalat.com.ua/cart/'){
   const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__cart-item')[0];
   const simple_child = simple_child_1.cloneNode(true);//Образец элемента
   creat_simple(simple_child);//Создание примера
+
+  count_option();
 
   count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
   for(let i = 0; i < count_combo; i++ ){
