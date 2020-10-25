@@ -460,6 +460,60 @@ function establish_output(object, name, count, price, index){
   object[index]['price'] = price;
 }
 
+function output_checkout(object){
+  //Функия для вывода новых(измененных товаров на страницу офрмелния заказа)
+  let simle = document.getElementsByClassName('cart_item')[0];//Берем товар для образца
+  simle = simle.cloneNode(true);//Создаем его копию, чтобы он не менялся при измении страницы
+
+  let parent = document.getElementsByClassName('shop_table')[0];//Родительский элмент, где храняться все товары
+  parent = parent.getElementsByTagName('tbody')[0];
+
+  //Удаляем стартовые элементы со страницы
+  let elems = document.getElementsByClassName('cart_item');
+  for(let i = 0; i < elems.length; i++){
+    elems[i].style.display = 'none';
+  }
+
+  let sum_price = 0;//Общая цена всех новых товаров
+
+  //Выводим новые товары
+  let len = Object.keys(object).length;
+  for(let i = 0; i < len; i++){
+    //Задаем в переменные свойства object
+    let name = object[i]['name'];
+    let count = object[i]['count'];
+    let price = object[i]['price'];
+    let count_price = price.slice(0, price.indexOf('₴'));
+
+    sum_price += Number(count_price);
+
+    let elem = simle.cloneNode(true);//Создаем новый элемент
+
+    //Устанававливаем свойства из object
+    let elem_name = elem.getElementsByClassName('product-name')[0];
+    elem_name.innerHTML = name + '<strong class="product-quantity">×&nbsp;1</strong>';
+
+    let elem_count = elem.getElementsByClassName('product-quantity')[0];
+    elem_count.innerHTML = '× ' + count;
+
+    let elem_price = elem.getElementsByTagName('bdi')[0];
+    elem_price.innerText = price;
+
+    parent.append(elem);//Добавляем новый элемент в конец родителя
+  }
+
+  //Устанавливаем новую цену
+  let elem_sum_price = document.getElementsByClassName('cart-subtotal')[0];
+  elem_sum_price = elem_sum_price.getElementsByTagName('bdi')[0];
+
+  elem_sum_price.innerHTML = sum_price + '.00₴';
+
+  let order_total = document.getElementsByClassName('order-total')[0];
+  order_total = order_total.getElementsByTagName('bdi')[0];
+
+  order_total.innerHTML = sum_price + '.00₴';
+}
+
 let link, arr_delit_combo, enter_price, parent, output_object; //Глобальные переменные
 
 //Главная функция для вывода данных на страницу
@@ -511,6 +565,8 @@ function main_enter(){
   }else if(link == 'http://salalat.com.ua/checkout/'){
     let object = localStorage['out_object'];
     output_object = JSON.parse(object);
+
+    output_checkout(output_object);//Функия для вывода новых(измененных товаров на страницу офрмелния заказа)
   }
 
   main_reloud();
