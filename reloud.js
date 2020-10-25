@@ -90,9 +90,11 @@ function reloud_3(elem, index){
 
 	let combo_index = index - Object.keys(object_item['my_id']).length - 1;//Индекс комбо, который удалили
 
-	sessionStorage.setItem('delit', Storage['delit'] + ',' + combo_index);//Установка в sessionStorage индексы удаланных комбо
+	let sesion_stor = sessionStorage.getItem('delit') !== null? sessionStorage.getItem('delit') : "";
+	sessionStorage.setItem('delit', sesion_stor + ',' + combo_index);//Установка в sessionStorage индексы удаланных комбо
 
-	localStorage.setItem('delit', Storage['delit'] + ',' + combo_index);
+	let local_stor = localStorage.getItem('delit') !== null? localStorage.getItem('delit') : "";
+	localStorage.setItem('delit', local_stor + ',' + combo_index);
 	elem_parent.style.display = 'none';//Удаляем комбо со страницы
 
 	reloud_2();
@@ -113,7 +115,7 @@ function listen_remove_combo(){
 		let total_price = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
 		//total_price.input = () => reload2();
 
-		if(a_href.href == 'http://salalat.com.ua/cart/'){
+		if(a_href.href.indexOf('http://salalat.com.ua/cart/') != -1){
 			item_remove[i].onclick = () => reloud_3(item_remove[i], i);//Обновляет страницу при удалении combo
 		}else{
 			item_remove[i].onclick = reloud_2;//Обновляет страницу при удалении товара
@@ -121,25 +123,31 @@ function listen_remove_combo(){
 	}
 }
 
-const item_qty = document.getElementsByClassName('qty');
-const item_remove = document.getElementsByClassName('product-remove');
+let item_qty, item_remove;//Глобальные переменные
 
+function main_reloud(){
+	//Главная функция reloud вызываеться после main_enter
+	item_qty = document.getElementsByClassName('qty');
+	item_remove = document.getElementsByClassName('product-remove');
 
-if(link == 'http://salalat.com.ua/cart/'){
+	link = window.location.href;
 
-	for(let i = 0; i < item_qty.length; i++){
-		item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
-	}
+	if(link == 'http://salalat.com.ua/cart/'){
 
-	listen_remove_combo();
+		for(let i = 0; i < item_qty.length; i++){
+			item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
+		}
 
-	elem_input = '';
+		listen_remove_combo();
 
-	//Установка функции обновления цены на страницые при выборе другого селектора
-	let develory_parent = document.getElementById('shipping_method');
-	for(let i = 0; i < 3; i++){
-		let develory = develory_parent.getElementsByTagName('input')[i];
-		develory.onclick = reloud_2; 
+		elem_input = '';
+
+		//Установка функции обновления цены на страницые при выборе другого селектора
+		let develory_parent = document.getElementById('shipping_method');
+		for(let i = 0; i < 3; i++){
+			let develory = develory_parent.getElementsByTagName('input')[i];
+			develory.onclick = reloud_2; 
+		}
 	}
 }
 

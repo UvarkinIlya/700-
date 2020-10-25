@@ -409,8 +409,66 @@ function establish_backet(){
   elem.remove();//Удаление страрового узла с ценой, т.к код wordpress изменяет его и выводит на страницу
 }
 
+
+function creat_output(){
+  //Создаем обект для вывода его на странице оплаты и заносим его в LocalStorage
+  //Считываем товары со страницы
+  let object = {};// объект в который будем все заносить
+  let new_elems = [];//Массив в котором храняться элемент выведенные на странице
+
+  let elems = parent.getElementsByClassName('woocommerce-cart-form__cart-item');//Массив со всеми элементами
+
+  for(let i = 0; i < elems.length; i++){
+    //Фильтрация
+    if(elems[i].style.display != 'none'){
+      new_elems.push(elems[i]);
+    }
+  }
+
+  //Добавлене в object нужных свойств
+  for(let i = 0; i < new_elems.length; i++){
+    let name = new_elems[i].getElementsByClassName('product-name')[0];//Название товара + доп опции
+    name = name.getElementsByTagName('a')[0].innerText;
+
+    let count = new_elems[i].getElementsByClassName('quantity')[0];//Кол-во товаров, елси комбо то 1
+
+    if(count == undefined){
+      count = 1;
+    }else{
+      count = count.getElementsByTagName('input')[0];
+      count = Number(count.value);
+    }
+
+    let price = new_elems[i].getElementsByClassName('product-subtotal')[0];//Подытог
+    price = price.getElementsByTagName('bdi')[0].innerHTML;
+
+    establish_output(object, name, count, price, i);//Заносим все данные в object
+
+  }
+
+  let json = JSON.stringify(object);//Преобразуем object в string для передачи в localstorage
+
+  localStorage['out_object'] = json;//Передаем в localstorage
+}
+
+function establish_output(object, name, count, price, index){
+  //Заносим все данные в object
+  object[index] = {};//Создаем подобъект
+
+  object[index]['name'] = name;
+  object[index]['count'] = count;
+  object[index]['price'] = price;
+}
+
+let link, arr_delit_combo, enter_price, parent, output_object; //Глобальные переменные
+
 //Главная функция для вывода данных на страницу
 function main_enter(){
+  link = window.location.href;
+  arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
+  enter_price = 0;//Цена для вывода
+  parent = '';
+
   setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
   establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
 
@@ -428,6 +486,10 @@ function main_enter(){
     for(let i = 0; i < count_combo; i++ ){
       let flag = false;//Флаг явлеться ли i удаленным индексом?
 
+      if(arr_delit_combo === undefined){
+        arr_delit_combo = [];//Что бы не ломался следующий ццкл при не опрделенным массиве
+      }
+
       //Проверка на это
       for(let j = 1; j < arr_delit_combo.length; j++){
         if(Number(arr_delit_combo[j]) === i){
@@ -444,50 +506,15 @@ function main_enter(){
     }
 
     delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
+
+    creat_output();//Создает и передает object для вывода на странице оформления заказа
+  }else if(link == 'http://salalat.com.ua/checkout/'){
+    let object = localStorage['out_object'];
+    output_object = JSON.parse(object);
   }
+
+  main_reloud();
 }
 
-let enter_price = 0;//Цена для вывода
-//setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
-
-//establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
-
-let link = window.location.href;
-let arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
-
-let parent = '';
-
-/*if(link == 'http://salalat.com.ua/cart/'){
-  let big_parent = document.getElementsByClassName('woocommerce-cart-form__contents')[0];
-  parent = big_parent.getElementsByTagName('tbody')[0];//Куда будем добовлять элементы
-
-  const simple_child_1 = document.getElementsByClassName('woocommerce-cart-form__cart-item')[0];
-  const simple_child = simple_child_1.cloneNode(true);//Образец элемента
-  creat_simple(simple_child);//Создание примера
-
-  count_option();
-
-  count_combo = Object.keys(object_combo).length;//Подсчет кол-ва комбо
-  for(let i = 0; i < count_combo; i++ ){
-    let flag = false;//Флаг явлеться ли i удаленным индексом?
-
-    //Проверка на это
-    for(let j = 1; j < arr_delit_combo.length; j++){
-      if(Number(arr_delit_combo[j]) === i){
-        flag = true;
-      }
-    }
-
-    //Вывод каждого комбо
-    let elem = simple_child.cloneNode(true);
-
-    create_combo(elem, i, flag);
-
-    parent.append(elem);//Добавление элемента
-  }
-
-  delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
-
-}*/
 
 
