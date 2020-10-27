@@ -14,11 +14,6 @@ function upgrade_price(){
 	setTimeout(enter_price_fun, 3000);//Ждаьб чтобы перезаписалась цена в верхнем правом углу
 }
 
-function remember_delit_combo(){
-	//Запоминаем какое комбо удалено
-
-}
-
 function emyl_enter(elem){
 	let key = new KeyboardEvent('keydown', {key:"Enter", code:"Enter", altKey:false, bubbles: true, cancelBubble: false, cancelable: true, ctrlKey:false, returnValue:true, });
 
@@ -123,6 +118,18 @@ function listen_remove_combo(){
 	}
 }
 
+function del_adress(){
+	//Удадляет поля адресс доставики если выбран пункт самовывоз
+	let develory_parent = document.getElementById('shipping_method');
+	let develory = develory_parent.getElementsByTagName('input')[2];
+
+	let adress = document.getElementsByClassName('form-row')[1];
+
+	if(develory.checked == false){
+		 adress.style.display = 'none';
+	}
+}
+
 let item_qty, item_remove;//Глобальные переменные
 
 function main_reloud(){
@@ -132,7 +139,7 @@ function main_reloud(){
 
 	link = window.location.href;
 
-	if(link == 'http://salalat.com.ua/cart/'){
+	//if(link == 'http://salalat.com.ua/cart/'){
 
 		for(let i = 0; i < item_qty.length; i++){
 			item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
@@ -148,7 +155,15 @@ function main_reloud(){
 			let develory = develory_parent.getElementsByTagName('input')[i];
 			develory.onclick = reloud_2; 
 		}
-	}
+
+		del_adress();
+	/*}else if(link == 'http://salalat.com.ua/checkout/'){
+		let develory_parent = document.getElementById('shipping_method');
+		for(let i = 0; i < 3; i++){
+			let develory = develory_parent.getElementsByTagName('input')[i];
+			develory.onclick = reloud_2; 
+		}*/
+	//}
 }
 
 

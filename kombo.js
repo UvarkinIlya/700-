@@ -280,4 +280,4 @@ let all_item = ''
 let object_item= '';//Для глобоального использования
 
 //window.onload = () => main_object();
-setTimeout(main_object, 1000);//Начало работы главной функии. пауза нужна чтобы успел прогрузиться sessionStorage
+setTimeout(main_object, 3000);//Начало работы главной функии. пауза нужна чтобы успел прогрузиться sessionStorage

@@ -260,10 +260,13 @@ function emyl_click( elem ){
 function enter_price_fun(){
   //Вывод цены на страницу
   enter_price = count_price();//Устанавливает новую цену
+  if(enter_price == 0){
+    enter_price = Number(localStorage['sum_price']);
+  }
   //let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
   //elem_1.innerHTML = enter_price + '.00₴';
 
-  if(link == 'http://salalat.com.ua/cart/'){
+  //if(link == 'http://salalat.com.ua/cart/'){
     //let elem_1 = document.getElementsByClassName('jet-blocks-cart__total-val')[0];
     let parent_elem_2 = document.getElementsByClassName('cart-subtotal')[0];
     let elem_2 = parent_elem_2.getElementsByTagName('bdi')[0];
@@ -282,7 +285,7 @@ function enter_price_fun(){
     }else{
       elem_3.innerText = enter_price + '.00₴';
     }
-  }
+  //}
 }
 
 function count_option(){
@@ -408,7 +411,6 @@ function establish_backet(){
 
   elem.remove();//Удаление страрового узла с ценой, т.к код wordpress изменяет его и выводит на страницу
 }
-
 
 function creat_output(){
   //Создаем обект для вывода его на странице оплаты и заносим его в LocalStorage
