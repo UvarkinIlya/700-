@@ -130,11 +130,12 @@ function del_adress(){
 	//Удадляет поля адресс доставики если выбран пункт самовывоз
 	let develory_parent = document.getElementById('shipping_method');
 	let develory = develory_parent.getElementsByTagName('input')[2];
+	let free_develory = develory_parent.getElementsByTagName('input')[3];
 
 	let adress = document.getElementsByClassName('form-row')[1];
 	let adress_val = document.getElementById('billing_address_1');
 
-	if(develory.checked == false){
+	if((develory.checked == false) && (free_develory.checked == false)){
 		adress_val.value = 'Самовывоз';
 		adress.style.display = 'none';
 	}
@@ -154,7 +155,7 @@ function main_reloud(){
 
 	link = window.location.href;
 
-	//if(link == 'http://salalat.com.ua/cart/'){
+	if(link == 'http://salalat.com.ua/cart/'){
 
 		for(let i = 0; i < item_qty.length; i++){
 			item_qty[i].onchange = reloud_1;//Обновляет страницу при измении кол-ва
@@ -166,7 +167,7 @@ function main_reloud(){
 
 		//Установка функции обновления цены на страницые при выборе другого селектора
 		let develory_parent = document.getElementById('shipping_method');
-		for(let i = 0; i < 3; i++){
+		for(let i = 0; i < 4; i++){
 			let develory = develory_parent.getElementsByTagName('input')[i];
 			develory.onclick = reloud_2; 
 		}
@@ -183,7 +184,7 @@ function main_reloud(){
 			let develory = develory_parent.getElementsByTagName('input')[i];
 			develory.onclick = reloud_2; 
 		}*/
-	//}
+	}
 }
 
 

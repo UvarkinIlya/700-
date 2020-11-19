@@ -534,6 +534,79 @@ function output_checkout(object){
   order_total.innerHTML = sum_price + '.00₴';
 }
 
+function big_title(){
+	let link = window.location.href;
+
+	if(link == 'http://salalat.com.ua/checkout/'){
+		let title = document.getElementsByClassName('product-name');
+		for(let i = 0; i < title.length; i++){
+			title[i].style.width = '100%'
+		}
+	}
+}
+
+function count_option_to_str(str){
+  /*Считывает цену из доп опций из строки, где  цена доп опций стоит между '+' и '₴' */
+  let arr = str.split('₴');
+  let price = 0;
+
+  for(let i = 0; i < arr.length - 1; i++){
+    let start = arr[i].lastIndexOf('+') + 1;
+    let option = arr[i].substring(start);
+    price += Number(option);
+  }
+
+  return price;
+}
+
+function establish_option_price(elem, option_price, index, flag, elem_two = undefined){
+  /*Устанавливает цену доп опций */
+  let price = 0;
+
+  if(flag){
+    price = object_item['my_id'][index]['price_one'];
+    elem_two.innerText = (Number(price) + option_price) + '.00₴';
+  }else{
+    price = object_combo[index]['price'];
+  }
+
+  if(option_price != NaN){
+    elem.innerText = (Number(price) + option_price) + '.00₴';
+  }
+
+
+}
+
+function establish_new_option_price(){
+  /*Считывает DOM и выводит строку */
+  let parent = document.getElementsByClassName('cart_item');
+  let start = Object.keys(object_item['my_id']).length;
+  let price = 0;
+
+  for(let i = 0; i < parent.length; i++){
+    /*if(i == start - 1){
+      continue;
+    }*/
+
+    let elem = parent[i].getElementsByTagName('p')
+    if(elem.length == 0){
+      continue;
+    }
+    elem = elem[0].innerText;
+    price = count_option_to_str(elem);
+    
+    let elem_establish = parent[i].getElementsByClassName('product-subtotal')[0];
+    let elem_establish_two = parent[i].getElementsByClassName('product-price')[0];
+    elem_establish_two = elem_establish_two.getElementsByTagName('bdi')[0];
+
+    if(i < start){
+      establish_option_price(elem_establish, price, i, true, elem_establish_two);
+    }else{
+      establish_option_price(elem_establish, price, i - start, false);
+    }
+  }
+}
+
 let link, arr_delit_combo, enter_price, parent, output_object; //Глобальные переменные
 
 //Главная функция для вывода данных на страницу
@@ -544,8 +617,9 @@ function main_enter(){
   parent = '';
 
   change_buy_name();
+  big_title();
 
-  setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
+  //setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
   establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
 
   if(link == 'http://salalat.com.ua/cart/'){
@@ -584,12 +658,15 @@ function main_enter(){
     delit_item(object_item);//Удаляет из исходного списка товары, которые есть в комбо
 
     creat_output();//Создает и передает object для вывода на странице оформления заказа
+
+    establish_new_option_price();
   }else if(link == 'http://salalat.com.ua/checkout/'){
     let object = localStorage['out_object'];
     output_object = JSON.parse(object);
 
     output_checkout(output_object);//Функия для вывода новых(измененных товаров на страницу офрмелния заказа)
   }
+
 
   main_reloud();
 }
