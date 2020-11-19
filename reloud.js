@@ -1,16 +1,20 @@
 function reloud(){
+	hide_tbod(true);
 	location.reload(true);
 }
 
 function reloud_1(){
+	hide_tbod(true);
 	setTimeout(reloud, 500);//Ждать нужно чтобы успел прогрузится sessionstorage
 }
 
 function reloud_2(){
+	hide_tbod(true);
 	setTimeout(reloud, 3000);//Ждать нужно чтобы успел прогрузится sessionstorage
 }
 
 function upgrade_price(){
+	hide_tbod(true);
 	setTimeout(enter_price_fun, 3000);//Ждаьб чтобы перезаписалась цена в верхнем правом углу
 }
 
@@ -80,16 +84,20 @@ function set_session(item1 = '', item2 = ''){
 }*/
 
 function reloud_3(elem, index){
+	hide_tbod(true);
 	let elem_parent = elem.parentNode;//Весь товар
 	let elem_a = elem.getElementsByTagName('a')[0];
 
 	let combo_index = index - Object.keys(object_item['my_id']).length - 1;//Индекс комбо, который удалили
 
-	let sesion_stor = sessionStorage.getItem('delit') !== null? sessionStorage.getItem('delit') : "";
-	sessionStorage.setItem('delit', sesion_stor + ',' + combo_index);//Установка в sessionStorage индексы удаланных комбо
+	if(combo_index >= 0){
+		let sesion_stor = sessionStorage.getItem('delit') !== null? sessionStorage.getItem('delit') : "";
+		sessionStorage.setItem('delit', sesion_stor + ',' + combo_index);//Установка в sessionStorage индексы удаланных комбо
 
-	let local_stor = localStorage.getItem('delit') !== null? localStorage.getItem('delit') : "";
-	localStorage.setItem('delit', local_stor + ',' + combo_index);
+		let local_stor = localStorage.getItem('delit') !== null? localStorage.getItem('delit') : "";
+		localStorage.setItem('delit', local_stor + ',' + combo_index);
+	}
+
 	elem_parent.style.display = 'none';//Удаляем комбо со страницы
 
 	reloud_2();
@@ -124,9 +132,11 @@ function del_adress(){
 	let develory = develory_parent.getElementsByTagName('input')[2];
 
 	let adress = document.getElementsByClassName('form-row')[1];
+	let adress_val = document.getElementById('billing_address_1');
 
 	if(develory.checked == false){
-		 adress.style.display = 'none';
+		adress_val.value = 'Самовывоз';
+		adress.style.display = 'none';
 	}
 }
 
@@ -136,6 +146,11 @@ function main_reloud(){
 	//Главная функция reloud вызываеться после main_enter
 	item_qty = document.getElementsByClassName('qty');
 	item_remove = document.getElementsByClassName('product-remove');
+
+	let refre = document.getElementsByClassName('actions')[0];//Удлание элемента "обновить страницу"
+	if(refre != undefined){
+		refre.style.display = 'none';
+	}
 
 	link = window.location.href;
 
@@ -156,7 +171,12 @@ function main_reloud(){
 			develory.onclick = reloud_2; 
 		}
 
-		del_adress();
+		if(link == 'http://salalat.com.ua/checkout/'){
+			del_adress();
+		}
+
+		hide_tbod(false);
+
 	/*}else if(link == 'http://salalat.com.ua/checkout/'){
 		let develory_parent = document.getElementById('shipping_method');
 		for(let i = 0; i < 3; i++){

@@ -26,8 +26,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="678b3d09-8027-4120-839f-9690c8fec72a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/woocommerce/templates/cart/cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/woocommerce/templates/cart/cart.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/woocommerce/templates/cart/mini-cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/woocommerce/templates/cart/mini-cart.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kava/header.php" beforeDir="false" afterPath="$PROJECT_DIR$/kava/header.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kombo.js" beforeDir="false" afterPath="$PROJECT_DIR$/kombo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reloud.js" beforeDir="false" afterPath="$PROJECT_DIR$/reloud.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +72,7 @@
       <workItem from="1602245770486" duration="1449000" />
       <workItem from="1602311145466" duration="1962000" />
       <workItem from="1602329230293" duration="905000" />
+      <workItem from="1605261211272" duration="602000" />
     </task>
     <servers />
   </component>

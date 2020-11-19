@@ -137,7 +137,7 @@ function define_categor( categor ){
 
 	return arr;
 }
-
+``
 function establish_price( elem1, elem2){
 	//Установление цены для комбо
 	let price = 0;
@@ -248,8 +248,37 @@ function count_combo_price( object ){
 	return defer;
 }
 
+/*function hide_tbod(flag){
+	//Запреещает клик
+	let link = window.location.href;
+
+	if(link != 'http://salalat.com.ua/cart/'){
+		return
+	}
+
+	let elem = document.getElementsByTagName('tbody')[0];
+	if(flag){
+		elem.style.display = 'none';
+	}else{
+		elem.style.display = 'table-row-group';
+	}
+}*/
+
+function change_buy_name(){
+	let buttons = document.getElementsByClassName('add_to_cart_button');
+	for(let i = 0; i < buttons.length; i++){
+	  buttons[i].innerHTML = 'Замовити';
+	}
+  
+	single_button = document.getElementsByClassName('single_add_to_cart_button')[0];
+	if(single_button != undefined){
+	  single_button.innerHTML = 'Замовити';
+	}
+}
+
 //Главная функия для создания объектов
 function main_object(){
+	change_buy_name();
 	Storage = window.sessionStorage;//Взятие sessionStorage
 	all_item = string_items(); //Строка со всеми объектами
 	object_item = create_object_product(all_item);//Объет всех товаров
@@ -266,10 +295,13 @@ function main_object(){
 
 const combo_item = ['Суп', 'Салат', 'Паста', 'Крем'];//Категории комбо
 const combo_set = [['Суп', 'Салат'],
-									 ['Салат', 'Паста'],
-									 ['Суп', 'Паста']];
-const set_price = [175, 195, 170, 75];
+					['Салат', 'Паста'],
+					['Суп', 'Паста']];
+const set_price = [185, 205, 180, 85];
 const arr_img = ['http://salalat.com.ua/wp-content/uploads/2019/05/Mask-Group-7-300x300.png', 'hreh2', 'href3', 'href4'];//Массив src img
+const DELIVERY_PRICE = 40;
+const MAX_DELIVERY_PRICE = 350;
+
 let last_arr = [0, 0, 0, 0];//Массив индексов прошлого нахождения
 let count_combo = 0;// Счетчик кол-ва combo 
 let count_object_combo = 0;
@@ -280,4 +312,5 @@ let all_item = ''
 let object_item= '';//Для глобоального использования
 
 //window.onload = () => main_object();
+//hide_tbod(true);
 setTimeout(main_object, 3000);//Начало работы главной функии. пауза нужна чтобы успел прогрузиться sessionStorage

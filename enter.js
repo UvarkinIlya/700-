@@ -139,6 +139,14 @@ function create_combo(elem, key, flag){
   }
 }
 
+function del_count_price(){
+  let dom_count = document.querySelectorAll('th.product-quantity')[0];
+  dom_count.innerHTML = '';
+
+  let dom_price = document.querySelectorAll('th.product-price')[0];
+  dom_price.innerHTML = '';
+}
+
 function count_item( object, index ){
   //Считает кол-во товаров не входяших в комбо
   let nest_object = object['my_id'][index]['id_combo'];
@@ -202,6 +210,7 @@ function delit_item( object ){
   let elem_input = '';
   let elem_price = '';
   let count = 0;
+  let flag = true;
 
   for(key in nest_object){
     elem = document.getElementsByClassName('woocommerce-cart-form__cart-item')[key];
@@ -220,7 +229,12 @@ function delit_item( object ){
       elem.style.display = 'none';
     }else{
       change_price(object_item, key, count, elem_price);//Изменят подытог
+      flag = false;
     }
+  }
+
+  if(flag){
+    del_count_price();
   }
 }
 
@@ -281,7 +295,11 @@ function enter_price_fun(){
     elem_2.innerText = enter_price + '.00₴';
 
     if(develory_flag){
-      elem_3.innerText = Number(enter_price + 70) + '.00₴';
+      if(Number(enter_price) >= MAX_DELIVERY_PRICE){
+        elem_3.innerText = enter_price + '.00₴';
+      }else{
+        elem_3.innerText = Number(enter_price + DELIVERY_PRICE) + '.00₴';
+      }
     }else{
       elem_3.innerText = enter_price + '.00₴';
     }
@@ -524,6 +542,8 @@ function main_enter(){
   arr_delit_combo = localStorage['delit'];// Получаем массив indexов удаленных комбо
   enter_price = 0;//Цена для вывода
   parent = '';
+
+  change_buy_name();
 
   setTimeout(enter_price_fun, 2000);//Вывод цены на страницу пауза нужна чтобы не изменилась цена в верхнем правом углу
   establish_backet();//Устанавливает "в корзину" вместо цены корзины на всех страницах
